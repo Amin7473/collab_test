@@ -2,32 +2,428 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../public/fonts/MaterialIcons-Regular.eot');
+  src: local("Material Icons"), local("MaterialIcons-Regular"), url(../../public/fonts/MaterialIcons-Regular.woff2) format("woff2"), url(../../public/fonts/MaterialIcons-Regular.woff) format("woff"), url(../../public/fonts/MaterialIcons-Regular.ttf) format("truetype");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Circular Std Book"), url("../../public/fonts/CircularStd-Book.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: italic;
+  font-weight: 400;
+  src: local("Circular Std Book Italic"), url("../../public/fonts/CircularStd-BookItalic.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Circular Std Medium"), url("../../public/fonts/CircularStd-Medium.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: italic;
+  font-weight: 500;
+  src: local("Circular Std Medium Italic"), url("../../public/fonts/CircularStd-MediumItalic.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Circular Std Bold"), url("../../public/fonts/CircularStd-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: italic;
+  font-weight: 600;
+  src: local("Circular Std Bold Italic"), url("../../public/fonts/CircularStd-BoldItalic.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: normal;
+  font-weight: 800;
+  src: local("Circular Std Black"), url("../../public/fonts/CircularStd-Black.woff") format("woff");
+}
+@font-face {
+  font-family: "CircularStd";
+  font-style: italic;
+  font-weight: 800;
+  src: local("Circular Std Black Italic"), url("../../public/fonts/CircularStd-BlackItalic.woff") format("woff");
+}
+h1,
+.h1 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: whitesmoke;
+  margin-bottom: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+h2,
+.h2 {
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: whitesmoke;
+  margin-bottom: 0;
+}
+
+h3,
+.h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: whitesmoke;
+  margin-bottom: 0;
+}
+
+h4,
+.h4 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: whitesmoke;
+  margin-bottom: 0;
+}
+
+h5,
+.h5 {
+  font-size: 1rem;
+  font-weight: 500;
+  color:whitesmoke;
+  margin-bottom: 0;
+}
+
+h6,
+.h6 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: whitesmoke;
+  margin-bottom: 0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  font-family: "CircularStd", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: white;
+  background-color: #1f1d1b;
+  overflow-x: hidden;
+  line-height: 1.5;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+::selection {
+  background: #FF902F;
+  color: #FFF;
+  text-shadow: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+a {
+  text-decoration: none;
+  outline: none;
+  color: #FF902F;
+  cursor: pointer;
+  -webkit-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+a:hover {
+  color: #fb7500;
+  -webkit-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+a:focus {
+  outline: 0;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: whitesmoke;
+}
+p:last-child {
+  margin-bottom: 0;
+}
+
+strong {
+  font-weight: 700;
+}
+
+ol, ul {
+  list-style: none;
+  margin-block-end: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+.primary-btn{
+  /* background: #151b47; */
+  background: linear-gradient(to right, #FF902F 0%, #FC6075 100%);
+  border: 0;
+  display: block;
+  font-size: 20px;
+  width: 100%;
+  border-radius: 4px;
+  padding: 10px 26px;
+}
+
+.label_text{
+  color: whitesmoke;
+  font-size: 16px;
+  font-weight : 500;
+}
+
+.containers{
+  background: #312d29;
+  box-shadow: 0 25px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+.input_area{
+  background: #242220;
+  border-color: #464547;
+  color: rgb(255, 255, 255);
+  border-width: 2px; 
+  /* box-shadow: 0 10px 15px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); */
+  border-radius: 0.25rem; 
+  padding-top: 0.75rem; 
+  padding-bottom: 0.75rem; 
+  padding-left: 0.5rem; 
+  padding-right: 0.5rem; 
+  width: 100%;
+}
+
+.header {
+  background: linear-gradient(to right, #FF902F 0%, #FC6075 100%);
+  border-bottom: 1px solid transparent;
+  height: 65px;
+  /* z-index: 1044; */
+  /* position: fixed; */
+  /* top: 0;
+  right: 0;
+  left: 0; */
+  -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 992px) {
+  .header #toggle_btn {
+    color: #909294;
+    float: left;
+    font-size: 26px;
+    line-height: 70px;
+    padding: 0 10px;
   }
+  .header #toggle_btn .bar-icon {
+    display: inline-block;
+    width: 21px;
+  }
+  .header #toggle_btn .bar-icon span {
+    background-color: #FFF;
+    display: block;
+    float: left;
+    height: 2px;
+    width: 21px;
+    margin: 0 0 5px;
+    border-radius: 50px;
+  }
+  .header #toggle_btn .bar-icon span:nth-child(2) {
+    width: 15px;
+  }
+}
+
+.header .user-menu .dropdown-toggle::after {
+  border: 0;
+}
+.header .user-menu.nav > li.main-drop a.nav-link {
+  background: transparent;
+  width: auto;
+  display: inline;
+  margin: 0;
+}
+.header .user-menu.nav > li.dropdown .nav-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 0 5px;
+}
+.header .user-menu.nav > li > a {
+  color: #FFF;
+  font-size: 15px;
+  padding: 0 15px;
+}
+@media (max-width: 1199px) {
+  .header .user-menu.nav > li > a {
+    padding: 0 9px;
+  }
+}
+.header .user-menu.nav > li > a .badge {
+  color: #FFF;
+  font-weight: 700;
+  background-color: #9368E9;
+  position: absolute;
+  top: -2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header .user-menu.nav > li > a i {
+  font-size: 20px;
+}
+.header .user-menu.nav > li.flag-nav a {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+}
+.header .user-menu.nav > li.flag-nav a img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+.header .user-menu.nav > li.flag-nav a .dropdown-menu {
+  max-height: 150px;
+  min-width: 120px;
+  overflow-y: auto;
+}
+.header .user-menu.nav > li.flag-nav a .dropdown-menu .dropdown-item {
+  padding: 5px 15px;
+}
+.header .user-menu.nav > li.flag-nav a.dropdown-toggle {
+  background-color: rgba(255, 255, 255, 0.1);
+  height: 40px;
+  border-radius: 5px;
+  margin: 0 25px 0 10px;
+  width: auto;
+  position: relative;
+}
+.header .user-menu.nav > li.flag-nav a.dropdown-toggle::before {
+  content: "";
+  width: 2px;
+  height: 19px;
+  background: #FD909E;
+  position: absolute;
+  right: -15px;
+}
+.header .user-menu.nav > li.flag-nav .dropdown-menu {
+  max-height: 150px;
+  min-width: 120px;
+  overflow-y: auto;
+}
+.header .user-menu.nav > li.flag-nav .dropdown-menu .dropdown-item {
+  color: #212529;
+  padding: 5px 15px;
+}
+/* Container for the dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Button that triggers the dropdown */
+.dropbtn {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  padding: 10px 16px; /* Padding for the button */
+  font-size: 16px; /* Button font size */
+  border: none; /* Remove border */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  margin-top: 10rem;
+  right: 1rem;
+  padding: 5px;
+  position: absolute;
+  background-color: #f9f9f9; /* Background color for the dropdown items */
+  min-width: 150px; /* Minimum width of the dropdown */
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Add shadow */
+  z-index: 1;
+  border-radius: 5px; /* Rounded corners for dropdown */
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black; /* Text color */
+  padding: 8px 8px; /* Padding for the dropdown items */
+  text-decoration: none; /* Remove underline */
+  display: block; /* Make each item block-level */
+  border-radius: 5px; /* Rounded corners for links */
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd; /* Light grey background on hover */
+}
+
+.sidebar{
+  background-color: #ddd ;
+  width: 230px;
+}
+
+.full-calendar a {
+  color: white !important; /* Override the global style */
+}
+.full-calendar {
+  height: 70vh;
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
+.full-calendar .fc-col-header-cell {
+  height: 50px; /* Adjust the height as needed */
+  background-color: rgba(236, 237, 238, 0.1); /* Set the background color to gray */
+  color: black; /* Optional: Adjust the text color */
+  text-align: center; /* Optional: Center the text */
+  vertical-align: middle; /* Ensure the text is vertically centered */
+  font-weight: bold; /* Optional: Make the text bold */
+}
+
+/* Change the background and text color of all FullCalendar toolbar buttons */
+.fc .fc-toolbar .fc-button {
+  text-transform: capitalize;
+  background-color: rgba(236, 237, 238, 0.1);
+}
+
+/* Active state styling */
+.fc .fc-toolbar .fc-button.fc-button-active {
+  background-color: rgb(249 115 22);
+  color: white;
+  text-transform: capitalize;
+  border: 0;
+}
+
+.custom-event-button {
+  background-color: green; /* Change background color */         /* Pointer on hover */
+}
+
+/* Optional: Add hover effect */
+.custom-event-button:hover {
+  background-color: rgb(2, 100, 2);
 }

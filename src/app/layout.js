@@ -1,5 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import StoreWrapper from "@/common/wrapper/storeWrapper";
+import "@mantine/core/styles.css";
+import { ColorSchemeScript, createTheme, MantineProvider } from "@mantine/core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,9 +12,18 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const theme = createTheme({white:"#242220"});
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+      </head>
+      <body className={inter.className}>
+      <StoreWrapper>
+        <MantineProvider theme={theme}>
+          {children}
+        </MantineProvider>
+      </StoreWrapper>
+      </body>
     </html>
   );
 }
