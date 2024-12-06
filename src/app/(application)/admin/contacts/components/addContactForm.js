@@ -1,13 +1,16 @@
+"use client";
+
 import { Button, Group, Menu, Modal, MultiSelect, Select, TextInput, Switch } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import Scrollbars from 'react-custom-scrollbars-2';
-import { Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { closeAddPopup } from '@/common/store/slices/common';
 import { RiArrowDropDownLine, RiArrowDropUpLine  } from "react-icons/ri";
 import { FaCalendarAlt } from "react-icons/fa";
+import { usePostContact } from '../hooks/useCreateContact';
+
 
 const categories = [
     "Danger",
@@ -15,6 +18,7 @@ const categories = [
     "Success",
     "Info"
 ]
+
 
 function AddContactForm(){
     const {
@@ -27,13 +31,39 @@ function AddContactForm(){
         watch,
         setValue,
         formState: { errors },
-      } = useForm();
+      } = useForm({});
       const dispatch = useDispatch();
       const popup = useSelector((state) => state.common.addPopup);
+      
       const handleClose = () => {
         dispatch(closeAddPopup());
         reset();
       };
+      const {
+        mutate: createContact,
+        isSuccess: createContactSuccess,
+        isError: createContactError,
+        error: createContactErrors,
+      } = usePostContact();
+
+      const onSubmit = (data) => {
+        console.log(errors)
+        console.log("INside on submit")
+        const obj = {
+            name : watch("name"),
+            email : watch("email"),
+            phone_number : watch("phone_number"),
+            status : statusChecked
+        }
+        console.log("after dta")
+        console.log(obj)
+        createContact(obj);
+        console.log("rwall")
+        dispatch(closeAddPopup());
+        reset();
+        return data;
+      };
+
       const [statusChecked, setStatusChecked] = useState(true);
       return (
         <Modal
@@ -104,7 +134,7 @@ function AddContactForm(){
                 )}
                 />
                 <Controller
-                name='contact'
+                name='phone_number'
                 control={control}
                 rules={{
                     required: 'Contact is required!',
@@ -151,7 +181,8 @@ function AddContactForm(){
                 root: "!bg-orange-500 !px-6 !py-4 !rounded-full !w-[200px] !h-full !ml-[32%] !mt-3",
                 label: "!font-semibold !text-white !text-[1.1rem]",
                 }}
-                onClick={handleClose}
+                onClick={onSubmit}
+                type='button'
             >
                 Submit
             </Button>

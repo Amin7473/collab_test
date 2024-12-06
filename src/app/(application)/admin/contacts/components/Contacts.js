@@ -11,82 +11,84 @@ import { openAddPopup } from "@/common/store/slices/common";
 import { IoNotificationsOutline, IoSearchSharp } from "react-icons/io5";
 import { FaGear, FaEllipsisVertical } from "react-icons/fa6";
 import { RiDeleteBin6Line  } from "react-icons/ri";
+import { useGetContacts } from "../hooks/useGetContacts";
+import { useDeleteContact } from "../hooks/useDeleteContact";
 
-const defaultContacts = [
-    {
-        id : 1,
-        name : "John Doe",
-        email : "john.doe@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 2,
-        name : "Richard Miles",
-        email : "richard.miles@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 3,
-        name : "John Smith",
-        email : "john.smith@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 4,
-        name : "Mike Litorus",
-        email : "mike.litorus@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 5,
-        name : "Wilmer Deluma",
-        email : "wilmer.deluma@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 6,
-        name : "John Doe",
-        email : "john.doe@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 7,
-        name : "Richard Miles",
-        email : "richard.miles@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 8,
-        name : "John Smith",
-        email : "john.smith@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 9,
-        name : "Mike Litorus",
-        email : "mike.litorus@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    },
-    {
-        id : 10,
-        name : "Wilmer Deluma",
-        email : "wilmer.deluma@aptagrim.com",
-        contact : "8925762388",
-        status : true
-    }
-]
+// const defaultContacts = [
+//     {
+//         id : 1,
+//         name : "John Doe",
+//         email : "john.doe@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 2,
+//         name : "Richard Miles",
+//         email : "richard.miles@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 3,
+//         name : "John Smith",
+//         email : "john.smith@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 4,
+//         name : "Mike Litorus",
+//         email : "mike.litorus@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 5,
+//         name : "Wilmer Deluma",
+//         email : "wilmer.deluma@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 6,
+//         name : "John Doe",
+//         email : "john.doe@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 7,
+//         name : "Richard Miles",
+//         email : "richard.miles@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 8,
+//         name : "John Smith",
+//         email : "john.smith@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 9,
+//         name : "Mike Litorus",
+//         email : "mike.litorus@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     },
+//     {
+//         id : 10,
+//         name : "Wilmer Deluma",
+//         email : "wilmer.deluma@aptagrim.com",
+//         contact : "8925762388",
+//         status : true
+//     }
+// ]
 
 export default function AdminContacts() {
-
+    const { data: contactsDataList } = useGetContacts({});
     const dispatch = useDispatch();
     const handleOpenModal = () => {
         dispatch(
@@ -101,9 +103,29 @@ export default function AdminContacts() {
               },
             }))
     }
+    const {
+        mutate: deleteContact,
+        isSuccess: deleteContactSuccess,
+        isError: deleteContactError,
+        error: deleteContactErrors,
+      } = useDeleteContact();
+    const onDelete = (id) => {
+
+        console.log("INside on delete")
+        const obj = {
+            id : id
+        }
+        console.log("after dahe")
+        console.log(obj)
+        deleteContact(obj);
+        console.log("rwall")
+        // dispatch(closeAddPopup());
+        // reset();
+        return obj;
+        };
     const { control, watch } = useForm();
     return (
-        <div className="text-white px-4 mb-5">
+        <div className="text-white p-5 mb-5">
             <AddContactForm />
             <div className="pb-4 flex flex-row items-center justify-between w-full">
                 <div>
@@ -142,10 +164,10 @@ export default function AdminContacts() {
                         <div className="pl-3 hover:cursor-pointer hover:bg-[#292623] hover:pl-[8px] hover:border-l-4 hover:border-orange-500 py-3">Staff</div>
                     </div>
                 </div>
-                <div className="w-[70%] bg-primary-card rounded">
-                    <div className="flex flex-col">
+                <div className="w-[70%]">
+                    <div className="flex flex-col bg-primary-card rounded">
                         {
-                            defaultContacts.map((contact, idx) => (
+                            contactsDataList?.results?.map((contact, idx) => (
                                 <div className="flex flex-row justify-between items-center px-3 py-4 border-b-2 border-primary-border shadow-lg">
                                     <div className="flex flex-row items-center gap-3">
                                         <img src="/assets/images/avatar-27.jpg" alt="User" className='h-[37px] rounded-[50%]' />
@@ -164,7 +186,7 @@ export default function AdminContacts() {
 
                                         <Menu.Dropdown>
                                             <Menu.Item leftSection={<FaPencilAlt/>}>Edit</Menu.Item>
-                                            <Menu.Item leftSection={<RiDeleteBin6Line/>}>Delete</Menu.Item>
+                                            <Menu.Item onClick={()=>onDelete(contact.id)} leftSection={<RiDeleteBin6Line/>}>Delete</Menu.Item>
                                         </Menu.Dropdown>
                                     </Menu>
                                 </div>

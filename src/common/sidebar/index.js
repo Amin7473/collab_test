@@ -45,7 +45,7 @@ export default function Sidebar({sideBarOpen, setSideBarOpen}) {
                 items: [
                 { id: 2, title: 'Calendar', path : '/admin/calendar', },
                 { id: 3, title: 'Contacts', path : '/admin/contacts', },
-                // { id: 4, title: 'Email' },
+                { id: 4, title: 'Chat', path : '/admin/chat' },
                 // { id: 5, title: 'File Manager' }
               ],
             }

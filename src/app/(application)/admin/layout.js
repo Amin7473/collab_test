@@ -18,7 +18,7 @@ export default function ApplicationLayout({ children }) {
                     <Sidebar sideBarOpen={sideBarOpen} setSideBarOpen={setSideBarOpen}/>
                 </div>
 
-                <div className={`${sideBarOpen ? 'ml-64' : 'ml-16'} mt-[70px] w-full p-4 transition-all duration-500`}>
+                <div className={`${sideBarOpen ? 'ml-64' : 'ml-16'} mt-[66px] w-full  transition-all duration-500`}>
                     {children}
                 </div>
             </div>

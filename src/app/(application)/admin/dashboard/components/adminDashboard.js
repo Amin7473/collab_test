@@ -139,7 +139,7 @@ const taskStatistics = [
 
 export default function AdminDashboard() {
     return (
-        <div className="text-white px-4">
+        <div className="text-white p-5">
             <h3>Welcome Admin!</h3>
             <p className="text-gray-300">Dashboard</p>
             <br />

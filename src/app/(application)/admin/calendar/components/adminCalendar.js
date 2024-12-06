@@ -27,7 +27,7 @@ export default function AdminCalendar() {
     }
 
     return (
-        <div className="text-white px-4 mb-5">
+        <div className="text-white p-5 mb-5">
             <AddEventForm />
             <div className="flex flex-row items-center justify-between">
                 <div>
