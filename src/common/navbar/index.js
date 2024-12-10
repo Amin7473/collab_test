@@ -1,4 +1,3 @@
-
 import logoSvg from '@/../public/assets/icons/logo.svg'
 import logo2 from '@/../public/assets/images/logo2.png'
 import collapseLogo from '@/../public/assets/icons/collapse-logo.svg'
@@ -11,11 +10,16 @@ import { IoNotificationsOutline, IoSearchSharp } from "react-icons/io5";
 import { CiFilter } from "react-icons/ci";
 import { useState } from 'react';
 import Link from 'next/link';
+import { getSession } from 'next-auth/react';
+import { useSelector } from 'react-redux';
 
 export default function NavBar({sideBarOpen, setSideBarOpen}){
     const { control, watch } = useForm();
+    const user = useSelector((state) => state.auth?.user);
+    console.log(user)
     const [isProfileOpen, setProfileOpen] = useState(false);
     const [isLangOpen, setLangOpen] = useState(false);
+
     return (
     <div className="header px-6 flex flex-row items-center justify-between transition-width duration-500 ease-in-out">
         <div className='flex flex-row items-center justify-between gap-6'>
@@ -104,7 +108,7 @@ export default function NavBar({sideBarOpen, setSideBarOpen}){
             </div>
             <div className='flex flex-row justify-between items-center gap-1'>
                 <img src="/assets/images/avatar-27.jpg" alt="User" className='h-[30px] rounded-[50%]' />
-                <h4>Admin</h4>
+                <h4>{user?.username}</h4>
                 <button onClick={()=>{setProfileOpen(!isProfileOpen)}}>
                     {isProfileOpen ?
                     <RiArrowDropUpLine className='text-[2rem] text-white'/>

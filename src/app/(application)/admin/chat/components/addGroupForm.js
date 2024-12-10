@@ -8,6 +8,8 @@ import { useForm } from 'react-hook-form';
 import { closeAddPopup } from '@/common/store/slices/common';
 import { RiArrowDropDownLine, RiArrowDropUpLine  } from "react-icons/ri";
 import { FaCalendarAlt } from "react-icons/fa";
+import { useGetUsers } from '../hooks/useGetUsers';
+import { usePostGroup } from '../hooks/useCreateGroup';
 
 const categories = [
     "Danger",
@@ -16,8 +18,9 @@ const categories = [
     "Info"
 ]
 
-function AddHolidayForm(){
-    const {
+
+function AddGroupForm(){
+  const {
         register,
         control,
         handleSubmit,
@@ -34,10 +37,36 @@ function AddHolidayForm(){
         dispatch(closeAddPopup());
         reset();
       };
+      const { data: users } = useGetUsers({});
+      const userData = users?.results?.map(item => ({label : item.username, value : String(item.id)}))
+      console.log("userData", userData)
 
+      const {
+        mutate: createGroup,
+        isSuccess: createGroupSuccess,
+        isError: createGroupError,
+        error: createGroupErrors,
+      } = usePostGroup();
+
+      const onSubmit = (data) => {
+        console.log(errors)
+        console.log("INside on submit")
+        const obj = {
+            group_name : watch("group_name"),
+            users : watch("users"),
+        }
+        
+        console.log("after dta")
+        console.log(obj)
+        createGroup(obj);
+        console.log("rwall")
+        dispatch(closeAddPopup());
+        reset();
+        return data;
+      };
       return (
         <Modal
-          title = "Add Holiday"
+          title = "Create Group"
           closeOnClickOutside={true}
           removeScrollProps={{
             allowPinchZoom: true, // Allow pinch to zoom on mobile devices
@@ -64,16 +93,16 @@ function AddHolidayForm(){
           <form className='flex flex-col flex-auto w-[100%] text-white'>
             <div className='flex flex-col gap-y-5 p-4 md:p-7 rounded-lg'>
                 <Controller
-                name='holiday_name'
+                name='group_name'
                 control={control}
                 rules={{
-                    required: 'Holiday name is required!',
+                    required: 'Group name is required!',
                 }}
                 render={({ field }) => (
                     <TextInput
                     {...field}
-                    label='Holiday Name'
-                    placeholder='Enter holiday name'
+                    label='Group Name'
+                    placeholder='Enter group name'
                     withAsterisk
                     error={''}
                     classNames={{
@@ -84,34 +113,31 @@ function AddHolidayForm(){
                 )}
                 />
 
-                <Controller
-                rules={{
-                    required: 'Holiday date is required',
-                }}
-                name='holiday_date'
+              <Controller
+                name='users'
                 control={control}
+                rules={{
+                    required: 'Users are required',
+                }}
                 render={({ field }) => (
-                    <DateInput 
+                    <MultiSelect
                     {...field}
+                    label='Members'
+                    placeholder='Select group members'
                     withAsterisk
-                    label='Holiday Date'
-                    placeholder='Enter holiday date'
+                    error={''}
+                    data ={userData}
+                    searchable
                     classNames={{
-                        label:
-                        '!w-[10rem] !font-medium md:!text-base !text-primary-gray !pb-1 !mb-1',
-                        input: 'md:!h-[3rem] !rounded-lg md:!text-base !text-white !border-1 focus:!border-orange-500 !border-[#464547]',
-                        calendarHeader : '!flex !flex-row !items-center !justify-between  !w-full',
-                        calendarHeaderControl : '!w-[80px] !p-1 ',
-                        calendarHeaderLevel : '!p-1'
+                        label: '!font-medium md:!text-base !text-primary-gray !mb-2',
+                        input: 'md:!h-[3rem] !rounded-lg md:!text-base !text-dune !text-white !border-1 focus:!border-orange-500 !border-[#464547] !py-3',
+                        option : '!bg-white hover:!bg-gray-300 hover:!text-primary-card',
+                        options : '!bg-white'
                     }}
-                    rightSection={
-                        <FaCalendarAlt/>
-                    }
-                    comboboxProps={{ withinPortal: true }}
-                    error={errors?.brand?.message}
                     />
                 )}
                 />
+
             </div>
             <Button
                 // leftSection={<img src="/assets/icons/add.svg" alt="add" />}
@@ -119,7 +145,7 @@ function AddHolidayForm(){
                 root: "!bg-orange-500 !px-6 !py-4 !rounded-full !w-[200px] !h-full !ml-[32%] !mt-3",
                 label: "!font-semibold !text-white !text-[1.1rem]",
                 }}
-                onClick={handleClose}
+                onClick={onSubmit}
             >
                 Submit
             </Button>
@@ -128,4 +154,4 @@ function AddHolidayForm(){
       );
 }
 
-export default AddHolidayForm
+export default AddGroupForm

@@ -61,30 +61,30 @@ export const authOptions = {
       console.log("inside jwt callback")
       // Persist the OAuth access_token to the token right after signin
       if (user) {
-        console.log(9000)
+        // console.log(9000)
         token.accessToken = user.token;
         token.role = user.user_type;
         // token.refreshToken = user.refresh;
         token.user = user;
       }
-      console.log(token)
-      console.log(8000)
+      // console.log(token)
+      // console.log(8000)
       return token;
     },
     session: async ({ session, token }) => {
       console.log("inside session callback")
 
-      console.log(3000)
+      // console.log(3000)
       // Send properties to the client, like an access_token from a provider.
       if (token) {
-        console.log(1000)
+        // console.log(1000)
         session.accessToken = token.accessToken;
         if (session?.user) session.user.role = token.user_type;
         // session.refreshToken = token.refreshToken;
         session.user = token.user;
       }
-      console.log(2000)
-      console.log(session)
+      // console.log(2000)
+      // console.log(session)
       return session;
     },
   },

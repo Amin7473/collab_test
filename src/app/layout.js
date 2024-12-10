@@ -6,6 +6,9 @@ import { ColorSchemeScript, createTheme, MantineProvider } from "@mantine/core";
 import QueryClientWrapper from "@/common/wrapper/queryClientWrapper";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import UserAuthWrapper from "@/common/wrapper/userAuthWrapper";
+import SessionProvider from "@/common/wrapper/sessionProvider";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,13 +25,16 @@ export default async function RootLayout({ children }) {
       <head>
       </head>
       <body className={inter.className}>
-      <StoreWrapper>
-        <QueryClientWrapper>
-          <MantineProvider theme={theme}>
-            {children}
-          </MantineProvider>
-        </QueryClientWrapper>
-      </StoreWrapper>
+      <SessionProvider session={session}>
+        <StoreWrapper>
+          <UserAuthWrapper/>
+          <QueryClientWrapper>
+            <MantineProvider theme={theme}>
+              {children}
+            </MantineProvider>
+          </QueryClientWrapper>
+        </StoreWrapper>
+      </SessionProvider>
       </body>
     </html>
   );

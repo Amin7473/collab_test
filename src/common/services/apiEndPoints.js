@@ -4,7 +4,9 @@ const apiEndPoints = {
  CONTACTS : 'main/contacts/',
  USER_LOGIN : 'main/user-login/',
  GET_USERS : 'main/get-users/',
- MESSAGES : 'main/messages/'
+ GROUPS : 'main/groups/',
+ MESSAGES : 'main/messages/',
+ GROUP_MESSAGES : 'main/group-message/'
 };
 
 export default apiEndPoints;
