@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext as _
 from django.db.models import Q
 
-from main.models import MessageModel
+from main.models import AttachmentModel, MessageModel
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -65,9 +65,28 @@ class CustomJWTSerializer(JSONWebTokenSerializer):
             raise serializers.ValidationError(str(e))
 
 
+class AttachmentSerializer(serializers.ModelSerializer):
+    file_name = serializers.SerializerMethodField()
+    file_size = serializers.SerializerMethodField()
+    file_extension = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = AttachmentModel
+        fields = "__all__"
+
+    def get_file_name(self, obj):
+        return self.obj.file.name.split("/")[-1]
+
+    def get_file_size(self, obj):
+        return self.obj.file.size
+    
+    def get_file_extension(self, obj):
+        return self.obj.file.name.split(".")[-1]
+
 class MessageSeralizer(serializers.ModelSerializer):
     created_by_name = serializers.CharField(source = "created_by.username", allow_blank=True)
-    created_by_profile_picture = serializers.CharField(source = "created_by.profile_picture", allow_blank=True)    
+    created_by_profile_picture = serializers.CharField(source = "created_by.profile_picture", allow_blank=True)
+    attachments =  AttachmentSerializer(read_only=True, many=True)
 
     class Meta:
         model = MessageModel

@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status, views
 from rest_framework import permissions
 
-from main.models import ContactModel, HolidayModel, MessageModel, UserModel
-from main.utils import broadcast_one_to_one_conversations, get_or_create_conversation
+from main.models import ContactModel, GroupModel, HolidayModel, MessageModel, UserModel
+from main.utils import broadcast_group_conversations, broadcast_latest_message, broadcast_one_to_one_conversations, get_or_create_conversation, get_or_create_new_conversation
 # Create your views here.
 
 
@@ -98,13 +98,85 @@ class MessageAPIView(views.APIView):
             data = request.data
             user_id = data.pop('user_id', None)
             data["created_by"] = request.user
-            conversation_name, conversation_instance = get_or_create_conversation(int(request.user.id), int(user_id))
+            conversation_name, conversation_instance = get_or_create_new_conversation(int(request.user.id), int(user_id))
             message_instance = MessageModel.objects.create(**data)
             conversation_instance.messages.add(message_instance)
             conversation_instance.save()
-            broadcast_one_to_one_conversations(
+            broadcast_latest_message(
                 conversation_instance=conversation_instance,
                 conversation_name= conversation_name
+            )
+            return Response({"message" : "Message sent"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GroupsAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        try:
+            user = request.user
+            data = GroupModel.objects.filter(users = user).values()
+            print(data)
+            for group in data:
+                group["users"] = GroupModel.objects.get(id = group["id"]).users.all().values("id", "username", "email", "profile_picture", "last_login")
+            return Response({"results" : data, "message" : "Success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        try:
+            data = request.data
+            users = data.pop("users", [])
+            group = GroupModel.objects.create(**data)
+            group.users.set(users)
+            return Response({"message" : "Group created"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        try:
+            data = request.data
+            pk = data.pop("id")
+            group = GroupModel.objects.get(id = pk)
+            users = data.pop("users", group.users.all())
+            GroupModel.objects.filter(id = data.pop("id")).update(**data)
+            group = GroupModel.objects.get(id = pk)
+            group.users.set(users)
+            return Response({"message" : "Group updated"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        try:
+            data = request.data
+            GroupModel.objects.filter(id = data.pop("id")).delete()
+            return Response({"message" : "Group deleted"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GroupMessageAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        try:
+            data = request.data
+            group_id = data.pop('group_id', None)
+            group_instance = GroupModel.objects.get(id = group_id)
+            data["created_by"] = request.user
+            conversation_name  = f"new_group_chat_{group_id}"
+            message_instance = MessageModel.objects.create(**data)
+            group_instance.messages.add(message_instance)
+            group_instance.save()
+            broadcast_group_conversations(
+                conversation_name= conversation_name,
+                group_id=group_id,
+                is_new=True
             )
             return Response({"message" : "Message sent"}, status=status.HTTP_200_OK)
         except Exception as e:

@@ -14,4 +14,6 @@ urlpatterns = [
     path('holidays/', view=views.HolidaysAPIView.as_view(), name="HolidaysAPIView"),
     path('get-users/', view=views.GetUsersAPIView.as_view(), name="GetUsersAPIView"),
     path('messages/', view=views.MessageAPIView.as_view(), name="MessageAPIView"),
+    path('groups/', view=views.GroupsAPIView.as_view(), name="GroupsAPIView"),
+    path('group-message/', view=views.GroupMessageAPIView.as_view(), name="GroupMessageAPIView"),
 ]

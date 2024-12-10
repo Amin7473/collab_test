@@ -201,3 +201,10 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+MEDIA_PATH = "media/"
+MEDIA_URL = "/media_collab/"
+MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_PATH)

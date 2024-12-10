@@ -132,9 +132,16 @@ class AccountsLoginAnalyticsModel(CoreGenericModel):
         verbose_name_plural = "Login Analytics Model"
 
 
+class AttachmentModel(CoreGenericModel):
+    file = models.FileField(upload_to="attachments/")
+
 
 class MessageModel(CoreGenericModel):
     message = models.TextField(null=False, blank=True)
+    attachments = models.ManyToManyField(
+        AttachmentModel,
+        blank=True
+    )
     created_by = models.ForeignKey(
         UserModel,
         on_delete=models.CASCADE,
@@ -158,4 +165,14 @@ class ConversationModel(CoreGenericModel):
         MessageModel,
         blank=True
     )
-    
+
+class GroupModel(CoreGenericModel):
+    group_name = models.CharField(max_length=100)
+    users = models.ManyToManyField(
+        UserModel,
+        blank=True
+    )
+    messages = models.ManyToManyField(
+        MessageModel,
+        blank=True
+    )
