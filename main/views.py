@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, views
 from rest_framework import permissions
 
-from main.models import ContactModel, GroupModel, HolidayModel, MessageModel, UserModel
+from main.models import AttachmentModel, ContactModel, GroupModel, HolidayModel, MessageModel, UserModel
 from main.utils import broadcast_group_conversations, broadcast_latest_message, broadcast_one_to_one_conversations, get_or_create_conversation, get_or_create_new_conversation
 # Create your views here.
 
@@ -96,10 +96,19 @@ class MessageAPIView(views.APIView):
     def post(self, request):
         try:
             data = request.data
+            attachments = request.FILES.pop("attachments", [])
+            if type(data) != dict:
+                data = data.dict()
             user_id = data.pop('user_id', None)
+            data.pop("attachments", None)
             data["created_by"] = request.user
+            print("data", data)
             conversation_name, conversation_instance = get_or_create_new_conversation(int(request.user.id), int(user_id))
             message_instance = MessageModel.objects.create(**data)
+            for attachment in attachments:
+                file_instance = AttachmentModel.objects.create(file = attachment)
+                message_instance.attachments.add(file_instance)
+                message_instance.save()
             conversation_instance.messages.add(message_instance)
             conversation_instance.save()
             broadcast_latest_message(
@@ -166,11 +175,19 @@ class GroupMessageAPIView(views.APIView):
     def post(self, request):
         try:
             data = request.data
+            attachments = request.FILES.pop("attachments", [])
+            if type(data) != dict:
+                data = data.dict()
+            data.pop("attachments", None)
             group_id = data.pop('group_id', None)
             group_instance = GroupModel.objects.get(id = group_id)
             data["created_by"] = request.user
             conversation_name  = f"new_group_chat_{group_id}"
             message_instance = MessageModel.objects.create(**data)
+            for attachment in attachments:
+                file_instance = AttachmentModel.objects.create(file = attachment)
+                message_instance.attachments.add(file_instance)
+                message_instance.save()
             group_instance.messages.add(message_instance)
             group_instance.save()
             broadcast_group_conversations(

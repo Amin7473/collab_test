@@ -69,19 +69,23 @@ class AttachmentSerializer(serializers.ModelSerializer):
     file_name = serializers.SerializerMethodField()
     file_size = serializers.SerializerMethodField()
     file_extension = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
     
     class Meta:
         model = AttachmentModel
         fields = "__all__"
 
     def get_file_name(self, obj):
-        return self.obj.file.name.split("/")[-1]
+        return obj.file.name.split("/")[-1]
 
     def get_file_size(self, obj):
-        return self.obj.file.size
+        return obj.file.size
     
     def get_file_extension(self, obj):
-        return self.obj.file.name.split(".")[-1]
+        return obj.file.name.split(".")[-1]
+
+    def get_file_url(self, obj):
+        return f'http://localhost:8000{obj.file.url}'
 
 class MessageSeralizer(serializers.ModelSerializer):
     created_by_name = serializers.CharField(source = "created_by.username", allow_blank=True)
