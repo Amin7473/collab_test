@@ -6,7 +6,8 @@ import { FaPlus } from "react-icons/fa";
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from "react-redux";
 import { openAddPopup } from "@/common/store/slices/common";
-import { Button, Popover, Select, TextInput, Menu, Table, Avatar, Group} from '@mantine/core';
+import { Button, Popover, Select, TextInput, Menu, Table, Avatar, Group, rem, Text, Paper, ActionIcon, Stack} from '@mantine/core';
+import { IconUpload, IconPhoto, IconX , IconDownload } from '@tabler/icons-react';
 import { Dropzone, MIME_TYPES, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { IoNotificationsOutline, IoSearchSharp } from "react-icons/io5";
 import { FaGear, FaEllipsisVertical } from "react-icons/fa6";
@@ -23,6 +24,74 @@ import { GiConversation } from "react-icons/gi";
 import { useSelector } from "react-redux";
 import UserAvatars from "./userAvatars";
 import { useSendMessageGroup } from "../hooks/useSendMessageGroup";
+
+
+function FileCard({ file, onRemove }) {
+  return (
+    <Paper
+      shadow="xs"
+      radius="md"
+      withBorder
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '8px',
+        marginTop: '8px',
+        border : 'none',
+        padding : '7px'
+      }}
+    >
+      <Text size="sm" truncate style={{ maxWidth: '150px' }}>
+        {file.name}
+      </Text>
+      <ActionIcon color="red" variant="light" onClick={onRemove}>
+        <IconX size={12} />
+      </ActionIcon>
+    </Paper>
+  );
+}
+
+const handleDownload = (file) => {
+  fetch(file.file_url)
+    .then((response) => response.blob()) // Get file as a Blob
+    .then((blob) => {
+      const blobUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = blobUrl;
+      anchor.download = file.file_name || 'downloaded_file'; // Default file name if none provided
+      anchor.click();
+      window.URL.revokeObjectURL(blobUrl); // Clean up URL object
+    })
+    .catch((error) => console.error('Download failed:', error));
+};
+
+function MessageFileCard({ file }) {
+  return (
+    <Paper
+      shadow="xs"
+      radius="md"
+      withBorder
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '8px',
+        marginTop: '8px',
+        border : 'none',
+        padding : '10px',
+        // backgroundColor : 'white'
+      }}
+    >
+      <Text size="sm" truncate style={{ maxWidth: '150px' }}>
+        {file.file_name}
+      </Text>
+      <ActionIcon color="blue" variant="light" onClick={()=>{handleDownload(file)}}>
+        <IconDownload size={14} />
+      </ActionIcon>
+    </Paper>
+  );
+}
 
 export default function Chat() {
   const playNotificationSound = () => {
@@ -41,10 +110,18 @@ export default function Chat() {
     const { control, setValue, watch  } = useForm();
     const socketRef = useRef(null);
     const [files, setFiles] = useState([]);
+    const [fileModalOpen, setFileModalOpen] = useState(false);
+
 
     const handleDrop = (acceptedFiles) => {
       setFiles(acceptedFiles);
+      console.log('files bruh', acceptedFiles)
     };
+
+    const handleRemoveFile = (index) => {
+      setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    };
+
     const {
       mutate: sendMessageAPI,
       isSuccess: sendMessageSuccess,
@@ -95,27 +172,34 @@ export default function Chat() {
     useEffect(() => {
       if (selectedItem !== null | selectedGroup !== null) {
         setValue("search", ""); // Clear the 'search' field
+        setFileModalOpen(false); // Clear the attachments field
+        setFiles([]);
       }
     }, [selectedItem, setValue, selectedGroup]);
 
 
-    const sendMessage =() =>{
-      console.log("in one on one msg");
-
-      if (watch("search")?.length === 0){
-        return (() => {});
+    const sendMessage = () => {
+      console.log("in one-on-one msg");
+    
+      if (watch("search")?.length === 0 && !files?.length) {
+        return;
       }
-      console.log(watch("search"));
-      sendMessageAPI({
-        message : watch('search'),
-        user_id : selectedItem?.id
-      })
+    
+      const payload = {
+        message: watch('search'),
+        user_id: selectedItem?.id,
+        attachments: files, // Array of selected files
+      };
+    
+      sendMessageAPI(payload);
       setValue("search", "");
-      // setTimeout(() => {
-      //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      // }, 100);
-      // messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+      setFiles([]); // Clear selected files after sending
+      setFileModalOpen(false);
+      // Scroll to the bottom of the chat (if applicable)
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    };
 
     const sendGroupMessage =() =>{
       console.log("in group msg");
@@ -125,9 +209,12 @@ export default function Chat() {
       console.log(watch("search"));
       sendGroupMessageAPI({
         message : watch('search'),
-        group_id : selectedGroup?.id
+        group_id : selectedGroup?.id,
+        attachments: files,
       })
       setValue("search", "");
+      setFiles([]); // Clear selected files after sending
+      setFileModalOpen(false);
     }
 
     useEffect(() => {
@@ -208,7 +295,7 @@ export default function Chat() {
     }, [messages]);
     console.log('selectedItem | selectedGroup', selectedItem | selectedGroup)
     return (
-        <div className="flex flex-row w-full justify-between h-full">
+        <div className="flex flex-row w-[85%] justify-between h-full fixed">
           {
             (selectedItem ? selectedItem : selectedGroup)
             ?
@@ -275,7 +362,15 @@ export default function Chat() {
                         >
                           <div className={`flex flex-col gap-2`}>
                             <p className="text-[1rem] text-white">{msg.message}</p>
-
+                            {
+                              msg.attachments.length !== 0
+                              &&
+                              <div className="flex flex-row justify-start gap-2 items-center">
+                                {msg.attachments.map((file, index) => (
+                                  <MessageFileCard key={index} file={file} />
+                                ))}  
+                              </div>
+                            }
                           </div>
                         </div>
                         <div className="flex gap-5 mt-1">
@@ -290,9 +385,9 @@ export default function Chat() {
                 ))
               )}
               </div>
-              <div className="text-white bg-primary-card shadow-md w-full h-[5rem] py-4 pl-6">
+              <div className={`text-white bg-primary-card shadow-md w-full ${fileModalOpen ? 'h-[64%]' : 'h-[5rem]'} py-4 pl-6`}>
                 <div className="ml-[8%] flex flex-row gap-5 items-center w-full">
-                  <div className=" w-[4%]">
+                  <div className=" w-[4%] cursor-pointer" onClick={() => setFileModalOpen(!fileModalOpen)}>
                     <ImAttachment size={27}/>
                   </div>
                   
@@ -330,46 +425,65 @@ export default function Chat() {
                   </div>
                   
                 </div>
-                {/* <div style={{ border: '2px dashed #aaa', padding: '20px', textAlign: 'center', height: '200px' }} className="text-white">
-                <Dropzone
-                    onDrop={(files) => console.log('accepted files', files)}
-                    onReject={(files) => console.log('rejected files', files)}
-                    maxSize={5 * 1024 ** 2}
-                    accept={IMAGE_MIME_TYPE}
-                    // {...props}
-                  >
-                    <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: 'none' }}> */}
-                      {/* <Dropzone.Accept>
-                      
-                      </Dropzone.Accept>
-                      <Dropzone.Reject>
-                        <IconX
-                          style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-red-6)' }}
-                          stroke={1.5}
-                        />
-                      </Dropzone.Reject> */}
-                      {/* <Dropzone.Idle>
-                        <IconPhoto
-                          style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-dimmed)' }}
-                          stroke={1.5}
-                        />
-                      </Dropzone.Idle> */}
+                {
+                  fileModalOpen
+                  &&
+                  (
+                   <div>
 
-                      {/* <div>
-                        <Text size="xl" inline>
-                          Drag images here or click to select files
-                        </Text>
-                        <Text size="sm" c="dimmed" inline mt={7}>
-                          Attach as many files as you like, each file should not exceed 5mb
-                        </Text>
+                    <Dropzone
+                      onDrop={handleDrop}
+                      onReject={(files) => console.log('rejected files', files)}
+                      maxSize={5 * 1024 ** 2}
+                      accept={MIME_TYPES}
+                      classNames={{
+                        label: '!text-primary !font-medium !text-base',
+                        root: `!border-2 !border-[#464547] !rounded-lg !mt-3 !p-3 !w-[78%] !ml-[8%] !cursor-pointer`,
+                        section: '!w-[1.2rem]',
+                      }}
+                    >
+                      <Group justify="center" gap="xl" mih={100} style={{ pointerEvents: 'none' }}>
+                        <Dropzone.Accept>
+                          <IconUpload
+                            style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-blue-6)' }}
+                            stroke={1.5}
+                          />
+                        </Dropzone.Accept>
+                        <Dropzone.Reject>
+                          <IconX
+                            style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-red-6)' }}
+                            stroke={1.5}
+                          />
+                        </Dropzone.Reject>
+                        <Dropzone.Idle>
+                          <IconPhoto
+                            style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-dimmed)' }}
+                            stroke={1.5}
+                          />
+                        </Dropzone.Idle>
+
+                        <div>
+                          <Text size="xl" inline>
+                            Drag images here or click to select files
+                          </Text>
+                          <Text size="sm" c="dimmed" inline mt={7}>
+                            Attach as many files as you like, each file should not exceed 5mb
+                          </Text>
+                        </div>
+                      </Group>
+                    </Dropzone>
+                      <div className="flex flex-row justify-start gap-2 items-center !w-[78%] !ml-[8%]">
+                        {files.map((file, index) => (
+                          <FileCard key={index} file={file} onRemove={() => handleRemoveFile(index)} />
+                        ))}  
                       </div>
-                    </Group>
-                  </Dropzone>
-                  </div> */}
+                   </div>
+                )
+                }
               </div>
             </div>
             :
-            <div className="text-white w-full h-full text-center mt-[11rem] flex flex-col text-[1.5rem] items-center gap-2">
+            <div className="text-white w-full h-full text-center mt-[15rem] flex flex-col text-[1.5rem] items-center gap-2">
               <MdOutlineChat  size={40}/>
               Click on a conversation to chat
             </div>

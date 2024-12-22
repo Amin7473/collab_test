@@ -5,19 +5,34 @@ import createQueryParamsForGetReq from "@/common/services/createQueryParamsForGe
 import { SuccessToast } from "@/common/services/toasterServices";
 
 export function useSendMessageGroup() {
-    const queryClient = useQueryClient();
-    return useMutation({
-      mutationFn: async (data) => {
-        const response = await makeApiRequest.post(
-          apiEndPoints.GROUP_MESSAGES,
-          data
-        );
-        return response?.data;
-      },
-      onSuccess: (data) => {
-        // queryClient?.invalidateQueries({ queryKey: ["admin", "annotators"] });
-        // toast.success(data?.message);
-        SuccessToast({ text: data?.message });
-      },
-    });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data) => {
+      const formData = new FormData();
+      formData.append('message', data.message);
+      formData.append('group_id', data?.group_id);
+
+      if (data.attachments && data.attachments.length > 0) {
+        data.attachments.forEach((file, index) => {
+          formData.append(`attachments`, file); // `attachments` will be sent as an array
+        });
+      }
+
+      const response = await makeApiRequest.post(
+        apiEndPoints.GROUP_MESSAGES,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      return response?.data;
+    },
+    onSuccess: (data) => {
+      SuccessToast({ text: data?.message });
+      queryClient.invalidateQueries({ queryKey: ["messages"] }); // Optional, if you want to refresh messages
+    },
+  });
   }
