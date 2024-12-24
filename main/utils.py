@@ -1,11 +1,11 @@
 import jwt
 
 from core.settings import SECRET_KEY
-from main.models import ConversationModel, GroupModel
+from main.models import ConversationModel, GroupModel, NotificationsModel
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from main.serializers import MessageSeralizer
+from main.serializers import MessageSeralizer, NotificationSeralizer
 
 
 def decode_and_validate_jwt_token(token : str):
@@ -126,3 +126,54 @@ def broadcast_latest_message(conversation_instance : ConversationModel, conversa
             conversation_name,
             broadcast_data,
     )
+
+
+
+def broadcast_notifications(user_id):
+    """notifications broadcasting to user."""
+    conversation_name = f"notifications_{str(user_id)}"
+    channel_layer = get_channel_layer()
+    notifications = NotificationsModel.objects.filter(for_user_id = user_id).order_by("-created_at")
+    unread_count = notifications.filter(is_read = False).count()
+    total_count = notifications.count()
+    notification_data = NotificationSeralizer(notifications.filter(is_read = False), many = True)
+    broadcast_data = {
+        "type": "notification_list",
+        "notifications" : notification_data.data,
+        "unread_count" : unread_count,
+        "total_count" : total_count
+    }
+    convert_uuids_to_str(broadcast_data)
+
+    async_to_sync(channel_layer.group_send)(
+            conversation_name,
+            broadcast_data,
+        )
+
+
+def broadcast_new_msg_notification(user_id):
+    conversation_name = f"notifications_{str(user_id)}"
+    channel_layer = get_channel_layer()
+    broadcast_data = {
+        "type": "new_notification",
+    }
+    convert_uuids_to_str(broadcast_data)
+
+    async_to_sync(channel_layer.group_send)(
+            conversation_name,
+            broadcast_data,
+        )
+
+def create_notification_and_broadcast(
+    for_user_id,
+    message,
+    route_data,
+    notification_type):
+
+    NotificationsModel.objects.create(
+        for_user_id = for_user_id,
+        message = message,
+        route_data = route_data,
+        notification_type = notification_type,
+    )
+    broadcast_notifications(user_id = for_user_id)

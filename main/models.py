@@ -176,3 +176,23 @@ class GroupModel(CoreGenericModel):
         MessageModel,
         blank=True
     )
+
+class NotificationsModel(CoreGenericModel):
+    id = models.UUIDField(default=uuid.uuid1, unique=True, primary_key=True, editable=False)
+    for_user = models.ForeignKey(
+        UserModel, on_delete=models.CASCADE, related_name="NotificationsModel_for_user"
+    )
+    message = models.CharField(max_length=512)
+    is_read = models.BooleanField(default=False)
+    route_data = models.JSONField(null=True, blank=True)
+    notification_type = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    # model managers
+    objects = models.Manager()
+
+    def __str__(self):
+        return str(self.message)

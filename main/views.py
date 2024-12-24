@@ -4,7 +4,7 @@ from rest_framework import status, views
 from rest_framework import permissions
 
 from main.models import AttachmentModel, ContactModel, GroupModel, HolidayModel, MessageModel, UserModel
-from main.utils import broadcast_group_conversations, broadcast_latest_message, broadcast_one_to_one_conversations, get_or_create_conversation, get_or_create_new_conversation
+from main.utils import broadcast_group_conversations, broadcast_latest_message, broadcast_new_msg_notification, broadcast_one_to_one_conversations, create_notification_and_broadcast, get_or_create_conversation, get_or_create_new_conversation
 # Create your views here.
 
 
@@ -115,6 +115,16 @@ class MessageAPIView(views.APIView):
                 conversation_instance=conversation_instance,
                 conversation_name= conversation_name
             )
+            # create_notification_and_broadcast(
+            #     for_user_id=user_id,
+            #     message=f"You have a message from {request.user.username}",
+            #     route_data={
+            #         "user_id" : str(request.user.id) 
+            #     },
+            #     notification_type="CHAT"
+            # )
+            broadcast_new_msg_notification(user_id=user_id)
+
             return Response({"message" : "Message sent"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(

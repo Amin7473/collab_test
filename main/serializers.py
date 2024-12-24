@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext as _
 from django.db.models import Q
 
-from main.models import AttachmentModel, MessageModel
+from main.models import AttachmentModel, MessageModel, NotificationsModel
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -94,4 +94,10 @@ class MessageSeralizer(serializers.ModelSerializer):
 
     class Meta:
         model = MessageModel
+        fields = "__all__"
+
+
+class NotificationSeralizer(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationsModel
         fields = "__all__"
