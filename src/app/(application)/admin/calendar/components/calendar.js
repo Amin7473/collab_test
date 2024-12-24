@@ -8,7 +8,7 @@ export default function Calendar() {
     const fiveDaysFromNow = new Date();
     fiveDaysFromNow.setDate(fiveDaysFromNow.getDate() + 5);
     return (
-    <div className='full-calendar w-[75rem] bg-primary-card rounded px-6 py-7 border-0 shadow-lg'>
+    <div className='full-calendar w-full bg-primary-card rounded px-6 py-7 border-0 shadow-lg'>
         <FullCalendar
                 cla
                 plugins={[

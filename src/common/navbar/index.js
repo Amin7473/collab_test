@@ -8,10 +8,12 @@ import { FaRegMessage } from "react-icons/fa6";
 import { RiArrowDropDownLine, RiArrowDropUpLine  } from "react-icons/ri";
 import { IoNotificationsOutline, IoSearchSharp } from "react-icons/io5";
 import { CiFilter } from "react-icons/ci";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
+
+
 
 export default function NavBar({sideBarOpen, setSideBarOpen}){
     const { control, watch } = useForm();
@@ -19,6 +21,68 @@ export default function NavBar({sideBarOpen, setSideBarOpen}){
     console.log(user)
     const [isProfileOpen, setProfileOpen] = useState(false);
     const [isLangOpen, setLangOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const playNotificationSound = () => {
+      console.log("playing sound")
+      const audio = new Audio('/assets/audios/new_message_notification.wav'); // Use the correct path
+      audio.play().catch((error) => {
+        console.error('Error playing sound:', error);
+      });
+    };
+    useEffect(() => {
+
+      const setupWebSocket = async () => {
+        // Retrieve session
+        const session = await getSession();
+        const token = session?.accessToken;
+        let socket;
+        socket = new WebSocket(
+          `${process.env.NEXT_PUBLIC_WEBSOCKET_BASEURL}ws/notifications/?token=${token}`
+        );
+        if (!socket){
+          console.log("socket dicsconnected",)
+          return (() => {});
+        }
+        // Handle connection open event
+        socket.onopen = () => {
+          console.log("WebSocket connected");
+        };
+    
+        // Handle incoming messages
+        socket.onmessage = (event) => {
+          console.log("Message received:", event.data);
+          let data = JSON.parse(event?.data);
+          console.log(data);
+          if (data?.type == "notification_list"){
+            setNotifications(data?.notifications);
+            console.log("check before sound",data?.notifications)
+            
+            // playNotificationSound(); // Play sound only for messages from others
+            
+          }
+          else if (data?.type == "new_notification") {
+            playNotificationSound(); // Play sound only for messages from others
+          }
+        };
+    
+        // Handle connection close event
+        socket.onclose = () => {
+          console.log("WebSocket disconnected");
+        };
+    
+        // Handle errors
+        socket.onerror = (error) => {
+          console.error("WebSocket error:", error);
+        };
+    
+        return () => {
+          socket.close(); // Cleanup on component unmount
+        };
+      };
+    
+      setupWebSocket();
+    }, []);
+
 
     return (
     <div className="header px-6 flex flex-row items-center justify-between transition-width duration-500 ease-in-out">

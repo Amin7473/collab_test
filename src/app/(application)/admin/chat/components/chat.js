@@ -295,7 +295,7 @@ export default function Chat() {
     }, [messages]);
     console.log('selectedItem | selectedGroup', selectedItem | selectedGroup)
     return (
-        <div className="flex flex-row w-[85%] justify-between h-full fixed">
+        <div className="flex flex-row w-[87%] justify-between h-full fixed">
           {
             (selectedItem ? selectedItem : selectedGroup)
             ?
@@ -329,9 +329,9 @@ export default function Chat() {
                   </div>
                 </div>
               </div>
-              <div className="w-full text-white h-[70.5vh] p-5 overflow-y-auto flex flex-col">
+              <div className="w-full text-white h-[75.5vh] p-5 overflow-y-auto flex flex-col">
               {messages.length === 0 ? (
-                <div className="text-[11rem] font-normal mt-[100px] ml-[10px]">
+                <div className="text-[11rem] font-normal mt-[150px] ml-[10px]">
                   <div className="flex flex-col items-center gap-3">
                     <GiConversation />
                     <p className="text-[1rem]">Send a message to start a conversation :)</p>
@@ -385,8 +385,8 @@ export default function Chat() {
                 ))
               )}
               </div>
-              <div className={`text-white bg-primary-card shadow-md w-full ${fileModalOpen ? 'h-[64%]' : 'h-[5rem]'} py-4 pl-6`}>
-                <div className="ml-[8%] flex flex-row gap-5 items-center w-full">
+              <div className={`text-white bg-primary-card shadow-md w-full ${fileModalOpen ? 'h-[48%]' : 'h-[5rem]'} py-4 pl-6`}>
+                <div className="ml-[12%] flex flex-row gap-5 items-center w-full">
                   <div className=" w-[4%] cursor-pointer" onClick={() => setFileModalOpen(!fileModalOpen)}>
                     <ImAttachment size={27}/>
                   </div>
@@ -438,7 +438,7 @@ export default function Chat() {
                       accept={MIME_TYPES}
                       classNames={{
                         label: '!text-primary !font-medium !text-base',
-                        root: `!border-2 !border-[#464547] !rounded-lg !mt-3 !p-3 !w-[78%] !ml-[8%] !cursor-pointer`,
+                        root: `!border-2 !border-[#464547] !rounded-lg !mt-3 !p-3 !w-[67%] !ml-[12%] !cursor-pointer`,
                         section: '!w-[1.2rem]',
                       }}
                     >
@@ -472,7 +472,7 @@ export default function Chat() {
                         </div>
                       </Group>
                     </Dropzone>
-                      <div className="flex flex-row justify-start gap-2 items-center !w-[78%] !ml-[8%]">
+                      <div className="flex flex-row justify-start gap-2 items-center !w-[78%] !ml-[12%]">
                         {files.map((file, index) => (
                           <FileCard key={index} file={file} onRemove={() => handleRemoveFile(index)} />
                         ))}  

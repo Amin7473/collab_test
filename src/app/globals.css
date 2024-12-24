@@ -427,3 +427,23 @@ ul {
 .custom-event-button:hover {
   background-color: rgb(2, 100, 2);
 }
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+  height: 12px; /* Height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #312d29; /* Background of the scrollbar track */
+  border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #464547; /* Color of the scrollbar thumb */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #222120; /* Color when hovering over the scrollbar thumb */
+}
