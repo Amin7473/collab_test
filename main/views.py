@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, views
 from rest_framework import permissions
 
-from main.models import AttachmentModel, ContactModel, GroupModel, HolidayModel, MessageModel, UserModel
+from main.models import AttachmentModel, ContactModel, ExcelDataModel, GroupModel, HolidayModel, MessageModel, UserModel
 from main.utils import broadcast_group_conversations, broadcast_latest_message, broadcast_new_msg_notification, broadcast_one_to_one_conversations, create_notification_and_broadcast, get_or_create_conversation, get_or_create_new_conversation
 # Create your views here.
 
@@ -206,6 +206,32 @@ class GroupMessageAPIView(views.APIView):
                 is_new=True
             )
             return Response({"message" : "Message sent"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExcelDataAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        try:
+            data = request.data
+            if ExcelDataModel.objects.exists():
+                ExcelDataModel.objects.update(data = data["data"])
+            else:
+                excel_data_instance = ExcelDataModel.objects.create(data = data["data"])
+            return Response({"message" : "Data recorded"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        try:
+            if ExcelDataModel.objects.exists():
+                data = ExcelDataModel.objects.first().data
+            else:
+                data = None
+            return Response({"message" : data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(
                 {"message" : "Something went wrong", "data" : str(e) }, status=status.HTTP_400_BAD_REQUEST)

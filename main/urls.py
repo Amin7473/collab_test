@@ -16,4 +16,5 @@ urlpatterns = [
     path('messages/', view=views.MessageAPIView.as_view(), name="MessageAPIView"),
     path('groups/', view=views.GroupsAPIView.as_view(), name="GroupsAPIView"),
     path('group-message/', view=views.GroupMessageAPIView.as_view(), name="GroupMessageAPIView"),
+    path('excel-data/', view=views.ExcelDataAPIView.as_view(), name="ExcelDataAPIView"),
 ]
