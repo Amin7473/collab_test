@@ -6,7 +6,9 @@ const apiEndPoints = {
  GET_USERS : 'main/get-users/',
  GROUPS : 'main/groups/',
  MESSAGES : 'main/messages/',
- GROUP_MESSAGES : 'main/group-message/'
+ GROUP_MESSAGES : 'main/group-message/',
+ EXCEL_DATA : 'main/excel-data/',
+ 
 };
 
 export default apiEndPoints;

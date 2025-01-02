@@ -8,7 +8,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import UserAuthWrapper from "@/common/wrapper/userAuthWrapper";
 import SessionProvider from "@/common/wrapper/sessionProvider";
+import {registerLicense} from '@syncfusion/ej2-base';
 
+
+registerLicense('ORg4AjUWIQA/Gnt2XVhhQlJHfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX9RdURjWXxcdHddT2Jc');
 
 const inter = Inter({ subsets: ["latin"] });
 

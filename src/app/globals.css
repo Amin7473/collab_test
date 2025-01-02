@@ -447,3 +447,15 @@ ul {
 ::-webkit-scrollbar-thumb:hover {
   background: #222120; /* Color when hovering over the scrollbar thumb */
 }
+
+
+#luckysheet-wa-editor {
+  width: 98% !important;
+  overflow: hidden !important;
+}
+
+#luckysheet-modal-dialog-slider-imageCtrl{
+  max-height: 80%;
+  position: absolute;
+  margin-top: 9rem;
+}
