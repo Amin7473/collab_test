@@ -112,7 +112,7 @@ export default function LuckySheet() {
 
             // You can also make an API call here to save the data to a backend
             const sendData = {
-                data : data
+                data : luckysheet.getAllSheets()
             }
             sendExcelData(sendData);
             console.log("sent");
